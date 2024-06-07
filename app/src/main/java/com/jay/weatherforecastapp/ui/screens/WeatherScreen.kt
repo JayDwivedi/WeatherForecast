@@ -40,11 +40,6 @@ fun WeatherScreen(viewModel: WeatherViewModel = hiltViewModel()) {
                 title = { Text("Weather App") }
             )
         },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { viewModel.fetchWeather(city) }) {
-                Text("Fetch")
-            }
-        },
         content = { paddingValues ->
             Column(
                 modifier = Modifier

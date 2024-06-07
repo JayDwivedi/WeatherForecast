@@ -10,6 +10,7 @@ import org.junit.Before
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import com.jay.weatherforecastapp.util.Result
+import kotlinx.coroutines.test.runTest
 
 @ExperimentalCoroutinesApi
 class WeatherRepositoryTest {
@@ -24,7 +25,7 @@ class WeatherRepositoryTest {
     }
 
     @Test
-    fun `getWeather returns success`() = runBlockingTest {
+    fun `getWeather returns success`() = runTest {
         val city = "San Francisco"
         val weatherResponse = WeatherResponse("20 °C", "10 km/h", "Clear", emptyList())
         whenever(weatherApiService.getWeather(city)).thenReturn(weatherResponse)
@@ -36,7 +37,7 @@ class WeatherRepositoryTest {
     }
 
     @Test
-    fun `getWeather returns error`() = runBlockingTest {
+    fun `getWeather returns error`() = runTest {
         val city = "San Francisco"
         val exception = RuntimeException("Network error")
         whenever(weatherApiService.getWeather(city)).thenThrow(exception)
