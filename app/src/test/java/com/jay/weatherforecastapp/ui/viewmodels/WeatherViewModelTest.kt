@@ -1,18 +1,19 @@
 package com.jay.weatherforecastapp.ui.viewmodels
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.Test
+
 
 class WeatherViewModelTest {
 
-    @org.junit.jupiter.api.BeforeEach
+
     fun setUp() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun getWeather() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun fetchWeather() {
     }
 }
