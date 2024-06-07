@@ -21,8 +21,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             WeatherForecastAppTheme {
-
-                    WeatherApp()
+                WeatherApp()
             }
         }
     }
