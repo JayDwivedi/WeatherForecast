@@ -21,7 +21,7 @@ class WeatherRepositoryTest {
     @Before
     fun setUp() {
         weatherApiService = mock()
-        weatherRepository = WeatherRepository(weatherApiService)
+        weatherRepository = WeatherRepositoryImp(weatherApiService)
     }
 
     @Test

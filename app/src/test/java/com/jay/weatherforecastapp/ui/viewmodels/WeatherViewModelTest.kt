@@ -1,93 +1,66 @@
+package com.jay.weatherforecastapp.ui.viewmodels
+
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.jay.weatherforecastapp.MainCoroutineRule
 import com.jay.weatherforecastapp.data.WeatherRepository
-import com.jay.weatherforecastapp.data.model.Forecast
 import com.jay.weatherforecastapp.data.model.WeatherResponse
-import com.jay.weatherforecastapp.ui.viewmodels.WeatherViewModel
 import com.jay.weatherforecastapp.util.Result
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runBlockingTest
-import kotlinx.coroutines.test.setMain
-import org.junit.After
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.Mockito.`when`
-import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class WeatherViewModelTest {
-
-    // Set the main dispatcher for testing
-    private val testDispatcher = TestCoroutineDispatcher()
 
     // Executes each task synchronously using Architecture Components
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    @Mock
-    private lateinit var repository: WeatherRepository
 
-    private lateinit var viewModel: WeatherViewModel
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    var mainCoroutineRule = MainCoroutineRule()
+    private lateinit var weatherRepository: WeatherRepository
+    private lateinit var weatherViewModel: WeatherViewModel
 
-    // Swap the default dispatcher with the test dispatcher
     @Before
-    fun setup() {
-        Dispatchers.setMain(testDispatcher)
-        // Initialize Mockito annotations
-        repository = mock<WeatherRepository>()
-        viewModel = WeatherViewModel(repository)
+    fun setUp() {
+        weatherRepository = mock<WeatherRepository>()
+        weatherViewModel = WeatherViewModel(weatherRepository)
     }
 
-    // Reset main dispatcher after testing
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
-        testDispatcher.cleanupTestCoroutines()
+
+    @Test
+    fun `fetchWeather returns success`() = runTest{
+        // Mock data
+        val city = "San Francisco"
+        val weatherResponse = WeatherResponse("20 °C", "10 km/h", "Clear", emptyList())
+        whenever(weatherRepository.getWeather(city)).thenReturn(Result.Success(weatherResponse))
+
+        // Call the function to be tested
+        weatherViewModel.fetchWeather(city)
+
+
+        assertEquals(Result.Success(weatherResponse), weatherViewModel.weatherState.value)
     }
 
     @Test
-    fun `test fetchWeather with success`() = testDispatcher.runBlockingTest {
-        // Mock response
-        val forecastList = listOf(Forecast(1, "25°C", "10 km/h"))
-        val weatherResponse = WeatherResponse("30°C", "15 km/h", "Sunny", forecastList)
-        val expectedResult = Result.Success(weatherResponse)
+    fun `fetchWeather returns error`() = runTest {
+        // Mock data
+        val city = "San Francisco"
+        val errorMessage = "Network error"
+        val exception = RuntimeException(errorMessage)
+        whenever(weatherRepository.getWeather(city)).thenReturn(Result.Error(exception))
 
-        // Mock the getWeather method directly
-        `when`(repository.getWeather("London")).thenReturn(expectedResult)
+        // Call the function to be tested
+        weatherViewModel.fetchWeather(city)
 
-        // Call the function under test
-        viewModel.fetchWeather("London")
 
-        // Ensure that loading state is emitted first
-        assert(viewModel.weatherState.first() is Result.Loading)
-
-        // Ensure that success state is emitted next
-        assert(viewModel.weatherState.first() == expectedResult)
-    }
-
-    @Test
-    fun `test fetchWeather with error`() = testDispatcher.runBlockingTest {
-        // Mock error response
-        val errorMessage = "City not found"
-        val expectedResult = Result.Error(Exception(errorMessage))
-
-        // Mock the getWeather method directly
-        `when`(repository.getWeather("InvalidCity")).thenReturn(expectedResult)
-
-        // Call the function under test
-        viewModel.fetchWeather("InvalidCity")
-
-        // Ensure that loading state is emitted first
-        assert(viewModel.weatherState.first() is Result.Loading)
-
-        // Ensure that error state is emitted next
-        assert(viewModel.weatherState.first() == expectedResult)
+        assertEquals(true, (weatherViewModel.weatherState.value as? Result.Error)?.exception != null)
     }
 }

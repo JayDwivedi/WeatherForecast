@@ -1,6 +1,7 @@
 package com.jay.weatherforecastapp.di
 
 import com.jay.weatherforecastapp.data.WeatherRepository
+import com.jay.weatherforecastapp.data.WeatherRepositoryImp
 import com.jay.weatherforecastapp.data.remote.WeatherApiService
 import com.jay.weatherforecastapp.ui.viewmodels.WeatherViewModel
 import dagger.Module
@@ -14,7 +15,7 @@ object AppModule {
 
     @Provides
     fun provideWeatherRepository(apiService: WeatherApiService): WeatherRepository {
-        return WeatherRepository(apiService)
+        return WeatherRepositoryImp(apiService)
     }
 
     @Provides

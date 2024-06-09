@@ -92,6 +92,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     androidTestImplementation(libs.androidx.navigation.testing)
     androidTestImplementation (libs.hilt.android.testing)
+    testImplementation ("org.mockito:mockito-inline:3.12.4")
+
 
 
 }
